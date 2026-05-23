@@ -1,3 +1,3 @@
-public class User {
+class User implements Scorable {
     
 }
