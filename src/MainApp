@@ -1,1 +1,30 @@
+public class MainApp {
 
+    public static void main(String[] args) {
+        // Member 1 writes this
+        User user = new User();
+        HomeScreen home = new HomeScreen(user);
+        home.initUI();
+    }
+
+    public static void launchLearningModule(User user) {
+        // Member 2 writes this
+        LearningModule module = new LearningModule();
+        LearningScreen screen = new LearningScreen(module);
+        screen.initUI();
+    }
+
+    public static void launchQuiz(User user) {
+        // Member 3 writes this
+        Quiz quiz = new Quiz();
+        QuizScreen screen = new QuizScreen(quiz, user);
+        screen.initUI();
+    }
+
+    public static void launchLeaderboard(User user) {
+        // Member 4 writes this
+        Leaderboard board = new Leaderboard();
+        LeaderboardScreen screen = new LeaderboardScreen(board);
+        screen.initUI();
+    }
+}
