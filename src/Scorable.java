@@ -1,3 +1,3 @@
-public class Scorable {
+class Scorable {
     
 }
