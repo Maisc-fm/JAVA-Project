@@ -1,3 +1,302 @@
-class QuizScreenGUI {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
 
+//Class: QuizScreenGUI
+//Creator: Bong Ming Meng (103541)
+//Tester:
+//GUI for the Quiz Screen of the Quality  Educatio SDG application.
+
+public class QuizScreenGUI extends JFrame {
+    
+    private Quiz quiz;
+    private FileStorage storage;
+    private String username;
+
+    private Timer timer;
+    private int timerLeft = 30;
+
+    private JLabel titleLabel;
+    private JLabel questionNumLabel;
+    private JLabel questionLabel;
+    private JLabel timerLabel;
+    private JLabel scoreLabel;
+    private JButton[] optionButtons;
+    private JPanel buttonPanel;
+    private JProgressBar progressBar;
+
+    private final Color SDG_RED = new Color(197, 32, 38);
+    private final Color WHITE = Color.WHITE;
+    private final Color LIGHT_GRAY = new Color(240, 240, 240);
+    private final Color GREEN = new Color(46, 139, 87);
+    private final Color ORANGE = new Color(255, 140, 0);
+
+    //Constructor
+    public QuizScreenGUI(String username, Quiz quiz, FileStorage storage){
+        this.username = username;
+        this.quiz = quiz;
+        this.storage = storage;
+
+        //Window settings
+        setTitle("Quality Education Quiz");
+        setSize(400, 700);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setLocationRelativeTo(null);
+
+        initComponents();
+        showQuestion();
+        startTimer();
+
+        setVisible(true);
+    }
+
+    private void initComponents(){
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(WHITE);
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(4, 1));
+        topPanel.setBackground(SDG_RED);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+
+        titleLabel = new JLabel("Quality Education Quiz", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(WHITE);
+
+        questionNumLabel = new JLabel("Question 1/" + quiz.getTotalQuestions(), JLabel.CENTER);
+        questionNumLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        questionNumLabel.setForeground(WHITE);
+
+        timerLabel = new JLabel("Time: 30s", JLabel.CENTER);
+        timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        timerLabel.setForeground(WHITE);
+
+        scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
+        scoreLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        scoreLabel.setForeground(WHITE);
+
+        topPanel.add(titleLabel);
+        topPanel.add(questionNumLabel);
+        topPanel.add(timerLabel);
+        topPanel.add(scoreLabel);
+
+        progressBar = new JProgressBar(0, quiz.getTotalQuestions());
+        progressBar.setValue(0);
+        progressBar.setForeground(SDG_RED);
+        progressBar.setStringPainted(true);
+
+        JPanel middlePanel = new JPanel();
+        middlePanel.setLayout(new BorderLayout());
+        middlePanel.setBackground(WHITE);
+        middlePanel.setBorder(BorderFactory.createEmptyBorder(20,15,10,15));
+
+        questionLabel = new JLabel("<html>Loading question...</html>", JLabel.CENTER);
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        middlePanel.add(questionLabel,BorderLayout.CENTER);
+
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(4, 1, 10, 10));
+        buttonPanel.setBackground(WHITE);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 20, 15));
+
+        optionButtons = new JButton[4];
+        for (int i = 0; i < 4; i++) {
+            optionButtons[i] = new JButton();
+            optionButtons[i].setFont(new Font("Arial", Font.PLAIN, 14));
+            optionButtons[i].setBackground(LIGHT_GRAY);
+            optionButtons[i].setFocusPainted(false);
+            optionButtons[i].setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+
+            final int index = i;
+            optionButtons[i].addActionListener(e -> handleAnswer(index));
+            buttonPanel.add(optionButtons[i]);
+        }
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(progressBar, BorderLayout.NORTH);
+        centerPanel.add(middlePanel, BorderLayout.CENTER);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        add(mainPanel);
+    }
+
+    //Show current question on screen
+    private void showQuestion(){
+        if(quiz.isFinished()){
+            showResult();
+            return;
+        }
+
+        //Update question number
+        questionNumLabel.setText("Question " + (quiz.getCurrentQ() + 1) + "/" + quiz.getTotalQuestions());
+
+        //Update progress bar
+        progressBar.setValue(quiz.getCurrentQ());
+
+        //Update question text
+        questionLabel.setText("<html><div style='text-align: center;'>" + quiz.getQuestion() + "</div></html>");
+
+        //Get current question type
+        String type = quiz.getType();
+
+        if (type.equals("TF")){
+            //Show True/False buttons only
+            optionButtons[0].setText("True");
+            optionButtons[1].setText("False");
+            optionButtons[0].setVisible(true);
+            optionButtons[1].setVisible(true);
+            optionButtons[2].setVisible(false);
+            optionButtons[3].setVisible(false);
+        }else{
+            //Show all 4 MCQ buttons
+            for (JButton btn : optionButtons){
+                btn.setVisible(true);
+                btn.setBackground(LIGHT_GRAY);
+                btn.setEnabled(true);
+            }
+        }
+
+        //Reset timer
+        timerLeft = 30;
+        timerLabel.setText("Time: 30s");
+        timerLabel.setForeground(WHITE);
+    }
+
+    //Handle answer button click
+    private void handleAnswer(int index){
+
+        timer.stop(); //Stop timer when user answers
+
+        String answer = optionButtons[index].getText();
+        boolean isCorrect = quiz.checkQuestion(answer);
+
+        //Show feedback
+        if (isCorrect){
+            optionButtons[index].setBackground(GREEN);
+        } else {
+            optionButtons[index].setBackground(Color.RED);
+        }
+
+        //Disable all buttons
+        for (JButton btn : optionButtons){
+            btn.setEnabled(false);
+        }
+
+        //Update score display
+        scoreLabel.setText("Score: " + quiz.getScore());
+
+        //Wait 1 second then go to next question
+        Timer delay = new Timer(1000, e -> {
+            resetButtons();
+            showQuestion();
+            if (!quiz.isFinished()){
+                startTimer();
+            }
+        });
+        delay.setRepeats(false);
+        delay.start();
+    }
+
+    //Reset button colors
+    private void resetButtons(){
+        for (JButton btn : optionButtons){
+            btn.setBackground(LIGHT_GRAY);
+            btn.setEnabled(true);
+        }
+    }
+
+    //Start timer
+    private void startTimer(){
+        timerLeft = 30;
+        timer = new Timer(1000, e -> {
+            timerLeft--;
+            timerLabel.setText("Time: " + timerLeft + "s");
+
+            //Turn orange when 10 seconds left
+            if (timerLeft <= 10){
+                timerLabel.setForeground(ORANGE);
+            }
+
+            //Time's up
+            if (timerLeft <= 0){
+                timer.stop();
+                quiz.checkQuestion(""); //Wrong answe
+                resetButtons();
+                showQuestion();
+                if (!quiz.isFinished()){
+                    startTimer();
+                }
+            }
+        });
+        timer.start();
+    }
+
+    //Show result screen when quiz finished
+    private void showResult(){
+        timer.stop();
+
+        //Save score to database
+        String message = quiz.getMotivationalMessage();
+        storage.wroteScore(username, quiz.getScore(), message);
+
+        //Clear screen
+        getContentPane().removeAll();
+
+        //Result panel
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new GridLayout(6,1,10,10));
+        resultPanel.setBackground(WHITE);
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(50, 30, 50, 30));
+
+        JLabel doneLabel = new JLabel("Quiz Completed!", JLabel.CENTER);
+        doneLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        doneLabel.setForeground(SDG_RED);
+
+        JLabel nameLabel = new JLabel("Player: "+ username, JLabel.CENTER);
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        JLabel scoreResultLabel = new JLabel("Score: "+ quiz.getScore() + "/" + quiz.getTotalPoints(), JLabel.CENTER);
+        scoreResultLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        JLabel msgLabel = new JLabel(message, JLabel.CENTER);
+        msgLabel.setFont(new Font("Arial", Font.ITALIC, 16));
+        msgLabel.setForeground(GREEN);
+
+        JButton retryButton = new JButton("Try Again");
+        retryButton.setBackground(SDG_RED);
+        retryButton.setForeground(WHITE);
+        retryButton.setFont(new Font("Arial", Font.BOLD, 14));
+        retryButton.addActionListener(e ->{
+            quiz.resetQuiz();
+            getContentPane().removeAll();
+            initComponents();
+            showQuestion();
+            startTimer();
+            revalidate();
+            repaint();
+        });
+
+        resultPanel.add(doneLabel);
+        resultPanel.add(nameLabel);
+        resultPanel.add(scoreResultLabel);
+        resultPanel.add(msgLabel);
+        resultPanel.add(retryButton);
+
+        add(resultPanel);
+        revalidate();
+        repaint();
+    }
 }
