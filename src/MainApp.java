@@ -10,6 +10,89 @@ public class MainApp {
 
     public static void launchLearningModule(User user) {
         // Member 2 
+        // Made by Nashrur Aisyha Hani binti Suphian @ Sharbini (102776) 
+
+import javax.swing.SwingUtilities;
+public class MainApp {
+
+    // Stores the learning module used in the application.
+    private LearningModule module;
+
+    // Constructor.
+    // Creates the sample learning module when the application starts.
+    public MainApp() {
+        module = buildSampleModule();
+    }
+
+    // Main method.
+    // This is the first method that runs when the program starts.
+    public static void main(String[] args) {
+        MainApp app = new MainApp();
+        app.launchGUI();
+    }
+
+    // Opens the LearningScreen window.
+    // The learning content is displayed inside the GUI.
+    public void launchGUI() {
+        SwingUtilities.invokeLater(() -> {
+            LearningScreen screen = new LearningScreen(module);
+            screen.initUI();
+        });
+    }
+
+    // Returns a motivational message for the user.
+    public String getMotivation() {
+        return "Keep learning! Education changes lives.";
+    }
+
+    // Placeholder method for saving scores.
+    // The full implementation can be added later.
+    public void saveScore() {
+        System.out.println("[MainApp] saveScore() - to be integrated with other members.");
+    }
+
+    // Creates sample learning pages for the application.
+    // Each page contains educational content and an image.
+    private LearningModule buildSampleModule() {
+        LearningModule m = new LearningModule();
+
+        // First page: Introduction to SDG Goal 4
+        m.addPage(
+            "SDG Goal 4 - Quality Education\n\n" +
+            "Ensure inclusive and equitable quality education and promote " +
+            "lifelong learning opportunities for all.",
+            "images/sdg4_cover.png"
+        );
+
+        // Second page: Importance of education
+        m.addPage(
+            "Why Education Matters\n\n" +
+            "Education is the foundation for improving people's lives and " +
+            "achieving sustainable development.",
+            "images/sdg4_why.png"
+        );
+
+        // Third page: Main targets of SDG Goal 4
+        m.addPage(
+            "Key Targets\n\n" +
+            "By 2030, ensure all girls and boys complete free, equitable, " +
+            "and quality primary and secondary education.",
+            "images/sdg4_targets.png"
+        );
+
+        return m;
+    }
+
+    // Returns the current learning module
+    public LearningModule getModule() {
+        return module;
+    }
+
+    // Updates the learning module
+    public void setModule(LearningModule module) {
+        this.module = module;
+    }
+}
     }
 
     public static void launchQuiz(User user) {
