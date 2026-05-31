@@ -1,3 +1,241 @@
-class LearningScreenGUI {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.List;
 
+/**
+ * Learning Screen
+ * Made by Nashrur Aisyha Hani binti Suphian @ Sharbini (102776) 
+ * This class creates the learning window for the SDG 4 application.
+ * It allows users to:
+ * - Read learning content
+ * - View related images
+ * - Move between pages using Previous and Next buttons
+ */
+public class LearningScreen extends JFrame {
+
+    // Panel that holds the learning content
+    private JPanel contentPanel;
+
+    // Label used to display images
+    private JLabel imageLabel;
+
+    // Learning module containing pages and images
+    private LearningModule module;
+
+    // Text area for displaying page content
+    private JTextArea textArea;
+
+    // Shows the current page number
+    private JLabel pageIndicator;
+
+    // Constructor
+    // Creates a learning screen and loads the selected module.
+    // @param module the learning module to display
+     public LearningScreen(LearningModule module) {
+        this.module = module;
+        initUI();
+    }
+
+    /**
+     * Builds the graphical user interface (GUI).
+     * This method creates:
+     * - The window
+     * - Header section
+     * - Image area
+     * - Content area
+     * - Navigation buttons
+     */
+    public void initUI() {
+
+        // Set up the main window
+        setTitle("SDG 4 - Quality Education | Learning");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(390, 844);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(0, 0));
+
+        // Create the page header
+        JLabel header = new JLabel("Quality Education", SwingConstants.CENTER);
+        header.setFont(new Font("SansSerif", Font.BOLD, 20));
+        header.setOpaque(true);
+        header.setBackground(new Color(0x4CAF50));
+        header.setForeground(Color.WHITE);
+        header.setPreferredSize(new Dimension(390, 56));
+        add(header, BorderLayout.NORTH);
+
+        // Main content area
+        JPanel centre = new JPanel();
+        centre.setLayout(new BoxLayout(centre, BoxLayout.Y_AXIS));
+        centre.setBackground(Color.WHITE);
+
+        // Area for displaying images
+        imageLabel = new JLabel("", SwingConstants.CENTER);
+        imageLabel.setPreferredSize(new Dimension(390, 200));
+        imageLabel.setMaximumSize(new Dimension(390, 200));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+        centre.add(imageLabel);
+
+        // Panel for displaying text content
+        contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE);
+        contentPanel.setBorder(
+                BorderFactory.createEmptyBorder(16, 20, 16, 20));
+
+        // Text area that shows page content
+        textArea = new JTextArea();
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        textArea.setBackground(Color.WHITE);
+
+        // Scroll bar for long content
+        JScrollPane scroll = new JScrollPane(
+                textArea,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        contentPanel.add(scroll, BorderLayout.CENTER);
+
+        centre.add(contentPanel);
+
+        add(centre, BorderLayout.CENTER);
+
+        // Navigation bar at the bottom
+        JPanel nav = new JPanel(new BorderLayout(8, 0));
+        nav.setBackground(new Color(0xF5F5F5));
+
+        nav.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(
+                        1, 0, 0, 0, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(
+                        10, 16, 10, 16)));
+
+        // Previous and Next buttons
+        JButton prevBtn = new JButton("<- Prev");
+        JButton nextBtn = new JButton("Next ->");
+
+        styleNavButton(prevBtn);
+        styleNavButton(nextBtn);
+
+        // Label showing current page number
+        pageIndicator = new JLabel("", SwingConstants.CENTER);
+        pageIndicator.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        pageIndicator.setForeground(new Color(0x666666));
+
+        // Go to the previous page when clicked
+        prevBtn.addActionListener((ActionEvent e) -> {
+            module.prevPage();
+            displayPage(module.getCurrentPage());
+        });
+
+        // Go to the next page when clicked
+        nextBtn.addActionListener((ActionEvent e) -> {
+            module.nextPage();
+            displayPage(module.getCurrentPage());
+        });
+
+        nav.add(prevBtn, BorderLayout.WEST);
+        nav.add(pageIndicator, BorderLayout.CENTER);
+        nav.add(nextBtn, BorderLayout.EAST);
+
+        add(nav, BorderLayout.SOUTH);
+
+        // Display the first page when the screen opens
+        displayPage(0);
+
+        setVisible(true);
+    }
+
+    // Displays the selected page and its image.
+    // @param i the page number to display
+    public void displayPage(int i) {
+
+        // Stop if there is no module or no pages
+        if (module == null || module.getTotalPages() == 0) {
+            return;
+        }
+
+        // Update the current page
+        module.showPage(i);
+
+        // Display the page text
+        List<String> pages = module.getPages();
+        textArea.setText(pages.get(i));
+
+        // Scroll back to the top
+        textArea.setCaretPosition(0);
+
+        // Get the image path for the current page
+        String imgPath = module.getImagePath();
+
+        // Display image if one exists
+        if (imgPath != null && !imgPath.isEmpty()) {
+
+            File f = new File(imgPath);
+
+            if (f.exists()) {
+
+                // Load and resize the image
+                ImageIcon raw = new ImageIcon(imgPath);
+
+                Image scaled = raw.getImage().getScaledInstance(
+                        390,
+                        200,
+                        Image.SCALE_SMOOTH);
+
+                imageLabel.setIcon(new ImageIcon(scaled));
+                imageLabel.setText("");
+
+            } else {
+
+                // Show image file name if image cannot be found
+                imageLabel.setIcon(null);
+                imageLabel.setText("[Image: " + imgPath + "]");
+            }
+
+        } else {
+
+            // No image available for this page
+            imageLabel.setIcon(null);
+            imageLabel.setText("");
+        }
+
+        // Update page number display
+        pageIndicator.setText(
+                "Page " + (i + 1) + " / " + module.getTotalPages());
+    }
+
+    // Applies the same style to all navigation buttons.
+    // @param btn the button to style
+    private void styleNavButton(JButton btn) {
+
+        // Set font style
+        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+
+        // Set button colour
+        btn.setBackground(new Color(0x4CAF50));
+
+        // Set text colour
+        btn.setForeground(Color.WHITE);
+
+        // Remove focus border
+        btn.setFocusPainted(false);
+
+        // Remove button border
+        btn.setBorderPainted(false);
+
+        // Change cursor to a hand when hovering
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Set button size
+        btn.setPreferredSize(new Dimension(100, 40));
+    }
 }
