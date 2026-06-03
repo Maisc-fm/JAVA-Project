@@ -6,7 +6,7 @@ import javax.swing.*;
 // Design: Smartphone size 390 x 844 px.
 // Created By: Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
 
-public class LearningScreen extends JFrame {
+public class LearningScreenGUI extends JFrame {
 
     private LearningModule module;
 
@@ -20,7 +20,7 @@ public class LearningScreen extends JFrame {
 
     private int currentPage;
 
-    public LearningScreen() {
+    public void LearningScreen() {
 
         module = new LearningModule();
         currentPage = 0;
@@ -186,9 +186,5 @@ public class LearningScreen extends JFrame {
             currentPage--;
             displayPage(currentPage);
         }
-    }
-
-    public static void main(String[] args) {
-        new LearningScreen();
     }
 }

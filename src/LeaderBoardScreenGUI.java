@@ -1,3 +1,6 @@
+import java.awt.*;
+import javax.swing.*;
+
 public class LeaderBoardScreenGUI extends JFrame {
    
     //Member 4
@@ -49,3 +52,4 @@ public class LeaderBoardScreenGUI extends JFrame {
     public void updateLeaderboard(String text) {
         leaderboardArea.setText(text);
     }
+}

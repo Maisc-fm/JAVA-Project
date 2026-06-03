@@ -18,7 +18,7 @@ public class MCQuestion implements Questionable {
         return question;
     }
   
-    @Override
+    //@Override
     public boolean checkAnswer(Object answer) {
         if (answer instanceof Integer) {
             return (Integer) answer == correctIdx;
@@ -30,12 +30,12 @@ public class MCQuestion implements Questionable {
         return false;
     }
   
-    @Override
+    //@Override
     public String getType() {
         return "MCQ";
     }
   
-    @Override
+    //@Override
     public List<String> getOptions() {
         return Arrays.asList(options);
     }
@@ -44,7 +44,7 @@ public class MCQuestion implements Questionable {
     public String getCorrectAnswer()       { return options[correctIdx]; }
     public void   setQuestion(String q)    { this.question = q; }
     public void   setOptions(String[] o)   { this.options  = o; }
-    public void   setCorrectIdx(int idx)   { this.correctIdx = idx; 
+    public void   setCorrectIdx(int idx)   { this.correctIdx = idx; } 
                                             
     @Override
     public String toString() {

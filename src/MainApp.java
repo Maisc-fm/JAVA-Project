@@ -6,90 +6,91 @@ public class MainApp {
 
     public static void main(String[] args) {
         // Member 1 
-    }
+
+
 
     public static void launchLearningModule(User user) {
-    import java.util.Scanner;
-    // Member 2
-    // Class: MainApp
-    // Main driver class of the application.
-    // Controls learning module and quiz.
-    // Created By: Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
+        import java.util.Scanner;
+        // Member 2
+        // Class: MainApp
+        // Main driver class of the application.
+        // Controls learning module and quiz.
+        // Created By: Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
 
-    public class MainApp {
+        public class MainApp {
 
-    // Learning module object
-    private LearningModule module;
+        // Learning module object
+        private LearningModule module;
 
-    // Constructor
-    public MainApp() {
+        // Constructor
+        public MainApp() {
 
-        module = new LearningModule();
-    }
-
-    // Start application.
-    public void start() {
-
-        Scanner input =
-                new Scanner(System.in);
-
-        System.out.println(
-                "================================");
-
-        System.out.println(
-                "WELCOME TO SDG 4 LEARNING APP");
-
-        System.out.println(
-                "================================");
-
-        System.out.println(
-                module.getTitle());
-
-        // Display first page
-        module.showPage(0);
-
-        // Create TF question
-        Questionable q1 =
-        new TFQuestion(
-        "SDG 4 focuses on Quality Education. (true/false)",
-        true);
-
-        System.out.println(
-                "\nQuiz Time!");
-
-        System.out.println(
-                q1.getQuestion());
-
-        System.out.print(
-                "Answer: ");
-
-        String answer =
-                input.nextLine();
-
-        // Check answer
-        if (q1.checkAnswer(answer)) {
-
-            System.out.println(
-                    "Correct!");
-
-        } else {
-
-            System.out.println(
-                    "Wrong Answer!");
+            module = new LearningModule();
         }
 
-        input.close();
-    }
+        // Start application.
+        public void start() {
 
-    // Program entry point.
-     // @param args command line arguments
-     public static void main(String[] args) {
+            Scanner input =
+                    new Scanner(System.in);
 
-        MainApp app =
-                new MainApp();
+            System.out.println(
+                 "================================");
 
-        app.start();
-    }
+            System.out.println(
+                    "WELCOME TO SDG 4 LEARNING APP");
+
+            System.out.println(
+                    "================================");
+
+            System.out.println(
+                    module.getTitle());
+
+            // Display first page
+            module.showPage(0);
+
+            // Create TF question
+            Questionable q1 =
+            new TFQuestion(
+            "SDG 4 focuses on Quality Education. (true/false)",
+            true);
+
+            System.out.println(
+                    "\nQuiz Time!");
+
+            System.out.println(
+                    q1.getQuestion());
+
+            System.out.print(
+                    "Answer: ");
+
+            String answer =
+                    input.nextLine();
+
+            // Check answer
+            if (q1.checkAnswer(answer)) {
+
+                System.out.println(
+                        "Correct!");
+
+            } else {
+
+                System.out.println(
+                        "Wrong Answer!");
+            }
+
+            input.close();
+        }
+
+        // Program entry point.
+        // @param args command line arguments
+        public static void main(String[] args) {
+
+            MainApp app =
+                    new MainApp();
+
+            app.start();
+        }
 }
 
     public static void launchQuiz(User user) {
@@ -282,5 +283,8 @@ public static void launchLeaderboard(String username, int score) {
      new LeaderboardScreenGUI(leaderboard);
 }
 }
+    }
+}
+
     
 
