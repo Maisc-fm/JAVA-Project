@@ -9,91 +9,88 @@ public class MainApp {
     }
 
     public static void launchLearningModule(User user) {
-        // Member 2 
-        // Made by Nashrur Aisyha Hani binti Suphian @ Sharbini (102776) 
+    import java.util.Scanner;
+    // Member 2
+    // Class: MainApp
+    // Main driver class of the application.
+    // Controls learning module and quiz.
+    // Created By: Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
 
-import javax.swing.SwingUtilities;
-public class MainApp {
+    public class MainApp {
 
-    // Stores the learning module used in the application.
+    // Learning module object
     private LearningModule module;
 
-    // Constructor.
-    // Creates the sample learning module when the application starts.
+    // Constructor
     public MainApp() {
-        module = buildSampleModule();
+
+        module = new LearningModule();
     }
 
-    // Main method.
-    // This is the first method that runs when the program starts.
-    public static void main(String[] args) {
-        MainApp app = new MainApp();
-        app.launchGUI();
+    // Start application.
+    public void start() {
+
+        Scanner input =
+                new Scanner(System.in);
+
+        System.out.println(
+                "================================");
+
+        System.out.println(
+                "WELCOME TO SDG 4 LEARNING APP");
+
+        System.out.println(
+                "================================");
+
+        System.out.println(
+                module.getTitle());
+
+        // Display first page
+        module.showPage(0);
+
+        // Create TF question
+        Questionable q1 =
+        new TFQuestion(
+        "SDG 4 focuses on Quality Education. (true/false)",
+        true);
+
+        System.out.println(
+                "\nQuiz Time!");
+
+        System.out.println(
+                q1.getQuestion());
+
+        System.out.print(
+                "Answer: ");
+
+        String answer =
+                input.nextLine();
+
+        // Check answer
+        if (q1.checkAnswer(answer)) {
+
+            System.out.println(
+                    "Correct!");
+
+        } else {
+
+            System.out.println(
+                    "Wrong Answer!");
+        }
+
+        input.close();
     }
 
-    // Opens the LearningScreen window.
-    // The learning content is displayed inside the GUI.
-    public void launchGUI() {
-        SwingUtilities.invokeLater(() -> {
-            LearningScreen screen = new LearningScreen(module);
-            screen.initUI();
-        });
-    }
+    // Program entry point.
+     // @param args command line arguments
+     public static void main(String[] args) {
 
-    // Returns a motivational message for the user.
-    public String getMotivation() {
-        return "Keep learning! Education changes lives.";
-    }
+        MainApp app =
+                new MainApp();
 
-    // Placeholder method for saving scores.
-    // The full implementation can be added later.
-    public void saveScore() {
-        System.out.println("[MainApp] saveScore() - to be integrated with other members.");
-    }
-
-    // Creates sample learning pages for the application.
-    // Each page contains educational content and an image.
-    private LearningModule buildSampleModule() {
-        LearningModule m = new LearningModule();
-
-        // First page: Introduction to SDG Goal 4
-        m.addPage(
-            "SDG Goal 4 - Quality Education\n\n" +
-            "Ensure inclusive and equitable quality education and promote " +
-            "lifelong learning opportunities for all.",
-            "images/sdg4_cover.png"
-        );
-
-        // Second page: Importance of education
-        m.addPage(
-            "Why Education Matters\n\n" +
-            "Education is the foundation for improving people's lives and " +
-            "achieving sustainable development.",
-            "images/sdg4_why.png"
-        );
-
-        // Third page: Main targets of SDG Goal 4
-        m.addPage(
-            "Key Targets\n\n" +
-            "By 2030, ensure all girls and boys complete free, equitable, " +
-            "and quality primary and secondary education.",
-            "images/sdg4_targets.png"
-        );
-
-        return m;
-    }
-
-    // Returns the current learning module
-    public LearningModule getModule() {
-        return module;
-    }
-
-    // Updates the learning module
-    public void setModule(LearningModule module) {
-        this.module = module;
+        app.start();
     }
 }
-    }
 
     public static void launchQuiz(User user) {
         // Member 3 
