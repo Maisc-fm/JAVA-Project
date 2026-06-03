@@ -1,4 +1,5 @@
 public class BadgeManager {
+    
     //Member 4
     //Made by Nur Syukrinah binti Suhaidi (97717)
     
