@@ -252,6 +252,14 @@ public class QuizScreenGUI extends JFrame {
         String message = quiz.getMotivationalMessage();
         storage.wroteScore(username, quiz.getScore(), message);
 
+         // =======================
+        // Member 4 Integration
+        // Send score to Leaderboard
+        // =======================
+
+
+    MainApp.launchLeaderboard(username, quiz.getScore());
+
         //Clear screen
         getContentPane().removeAll();
 
