@@ -5,7 +5,7 @@ public class User implements Scorable {
     
     private String username;
     private int    score;
-    private String badge
+    private String badge;
     
     public User(String username) {
         this.username = username;
@@ -20,7 +20,7 @@ public class User implements Scorable {
         this.username = enteredName.trim();
         return true;
 
-    @Override
+    //@Override
     public int calculateScore() {
         return this.score;
     }

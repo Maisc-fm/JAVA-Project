@@ -92,7 +92,7 @@ public class Quiz implements Questionable{
             loadQuestion();
         }
 
-    @Override
+    //@Override
     public String getQuestionText(){
         return getQuestion();
     }
@@ -102,7 +102,7 @@ public class Quiz implements Questionable{
         return checkQuestion(userAnswer);
     }
 
-    @Override
+    //@Override
     public String getCorrectAnswer(){
         if (currentQ < questions.size()){
             return questions.get(currentQ).getCorrectAnswer();
@@ -110,12 +110,12 @@ public class Quiz implements Questionable{
         return"";
     }
 
-    @Override
+    //@Override
     public String getQuestionType(){
         return type;
     }
 
-    @Override
+    //@Override
     public int getPoints(){
         if (currentQ < questions.size()){
             return questions.get(currentQ).getPoints();
