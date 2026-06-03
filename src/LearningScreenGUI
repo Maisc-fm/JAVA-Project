@@ -1,307 +1,194 @@
-import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.List;
+import javax.swing.*;
 
-/**
- * LearningScreen (GUI)
- * Made by Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
- * Matches Canva design:
- *   - White top bar with SDG wheel + "THE GLOBAL GOALS"
- *   - Red background
- *   - Pink rounded card for content + image
- *   - Red nav bar with white Prev/Next buttons
- *
- * NOTE: RoundedPanel and RoundedBorder are defined as
- *       static inner classes here so this file compiles
- *       independently without needing MainApp.
- */
+// Class: LearningScreen
+// Purpose: GUI screen for SDG 4 learning module.
+// Design: Smartphone size 390 x 844 px.
+// Created By: Nashrur Aisyha Hani binti Suphian @ Sharbini (102776)
+
 public class LearningScreen extends JFrame {
 
-    // Colours 
-    private static final Color SDG_RED   = new Color(197, 32, 38);
-    private static final Color PINK_CARD = new Color(245, 210, 210);
-    private static final Color WHITE     = Color.WHITE;
-    private static final Color DARK_TEXT = new Color(30, 30, 30);
+    private LearningModule module;
 
-    // UML fields 
-    private JPanel contentPanel;
+    private JLabel titleLabel;
+    private JLabel pageLabel;
+    private JTextArea contentArea;
     private JLabel imageLabel;
 
-    // Supporting fields 
-    private LearningModule module;
-    private JTextArea      textArea;
-    private JLabel         pageIndicator;
+    private JButton prevButton;
+    private JButton nextButton;
 
-    // Constructor
-    public LearningScreen(LearningModule module) {
-        this.module = module;
-    }
+    private int currentPage;
 
-    // UML method
-    // Builds and displays the full GUI.
-    public void initUI() {
+    public LearningScreen() {
 
-        // Window setup
-        setTitle("SDG 4 - Quality Education | Learning Module");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        module = new LearningModule();
+        currentPage = 0;
+
+        setTitle("SDG 4 Learning Screen");
         setSize(390, 844);
-        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(0, 0));
+        setLayout(null);
+        setResizable(false);
 
-        // Top bar 
-        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 10));
-        topBar.setBackground(WHITE);
-        topBar.setPreferredSize(new Dimension(390, 60));
-        topBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
-        topBar.add(buildSdgWheelLabel(38));
-        JLabel brandName = new JLabel("THE GLOBAL GOALS");
-        brandName.setFont(new Font("Arial", Font.BOLD, 15));
-        brandName.setForeground(DARK_TEXT);
-        topBar.add(brandName);
-        add(topBar, BorderLayout.NORTH);
+        initUI();
+        displayPage(currentPage);
 
-        // Red body 
-        JPanel body = new JPanel();
-        body.setBackground(SDG_RED);
-        body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-        body.setBorder(BorderFactory.createEmptyBorder(16, 16, 0, 16));
-
-        // Title row: SDG4 icon + "Learning Module"
-        JPanel titleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
-        titleRow.setBackground(SDG_RED);
-        titleRow.setMaximumSize(new Dimension(390, 64));
-        titleRow.add(buildSdg4IconLabel());
-        JLabel screenTitle = new JLabel("Learning Module");
-        screenTitle.setFont(new Font("Arial", Font.BOLD, 28));
-        screenTitle.setForeground(WHITE);
-        titleRow.add(screenTitle);
-        body.add(titleRow);
-        body.add(Box.createVerticalStrut(10));
-
-        // Pink rounded card 
-        RoundedPanel card = new RoundedPanel(24, PINK_CARD);
-        card.setLayout(new BorderLayout(0, 0));
-        card.setAlignmentX(Component.CENTER_ALIGNMENT);
-        card.setMaximumSize(new Dimension(370, 640));
-
-        // Image area (top of card)
-        imageLabel = new JLabel("", SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(358, 190));
-        imageLabel.setMaximumSize(new Dimension(358, 190));
-        imageLabel.setOpaque(true);
-        imageLabel.setBackground(new Color(230, 190, 190));
-        imageLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 170, 170)));
-        card.add(imageLabel, BorderLayout.NORTH);
-
-        // Text content area (centre of card)
-        contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(14, 18, 14, 18));
-
-        textArea = new JTextArea();
-        textArea.setWrapStyleWord(true);
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-        textArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        textArea.setOpaque(false);
-        textArea.setForeground(DARK_TEXT);
-
-        JScrollPane scroll = new JScrollPane(
-                textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
-        scroll.setBorder(BorderFactory.createEmptyBorder());
-        contentPanel.add(scroll, BorderLayout.CENTER);
-        card.add(contentPanel, BorderLayout.CENTER);
-
-        body.add(card);
-        add(body, BorderLayout.CENTER);
-
-        // Navigation bar (bottom)
-        JPanel nav = new JPanel(new BorderLayout(8, 0));
-        nav.setBackground(SDG_RED);
-        nav.setBorder(BorderFactory.createEmptyBorder(10, 20, 14, 20));
-
-        JButton prevBtn = new JButton("<- Prev");
-        JButton nextBtn = new JButton("Next ->");
-        styleNavButton(prevBtn);
-        styleNavButton(nextBtn);
-
-        pageIndicator = new JLabel("", SwingConstants.CENTER);
-        pageIndicator.setFont(new Font("Arial", Font.BOLD, 13));
-        pageIndicator.setForeground(WHITE);
-
-        prevBtn.addActionListener((ActionEvent e) -> {
-            module.prevPage();
-            displayPage(module.getCurrentPage());
-        });
-
-        nextBtn.addActionListener((ActionEvent e) -> {
-            module.nextPage();
-            displayPage(module.getCurrentPage());
-        });
-
-        nav.add(prevBtn,       BorderLayout.WEST);
-        nav.add(pageIndicator, BorderLayout.CENTER);
-        nav.add(nextBtn,       BorderLayout.EAST);
-        add(nav, BorderLayout.SOUTH);
-
-        // Show first page
-        displayPage(0);
         setVisible(true);
     }
 
-    // UML method 
-    // Renders the page at index i — updates text and image.
-    // @param i zero-based page index
-    public void displayPage(int i) {
-        if (module == null || module.getTotalPages() == 0) return;
+    private void initUI() {
 
-        module.showPage(i);
+    // Header Panel
+    JPanel headerPanel = new JPanel();
+    headerPanel.setBackground(Color.WHITE);
+    headerPanel.setBounds(0, 0, 390, 90);
+    headerPanel.setLayout(null);
+    add(headerPanel);
 
-        // Update text content
-        List<String> pages = module.getPages();
-        textArea.setText(pages.get(i));
-        textArea.setCaretPosition(0);
+    // SDG Logo
+    ImageIcon logoIcon = new ImageIcon("sdg_logo.png");
 
-        // Update image
-        String imgPath = module.getImagePath();
-        if (imgPath != null && !imgPath.isEmpty()) {
-            File f = new File(imgPath);
-            if (f.exists()) {
-                ImageIcon raw    = new ImageIcon(imgPath);
-                Image     scaled = raw.getImage().getScaledInstance(358, 190, Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaled));
-                imageLabel.setText("");
-            } else {
-                imageLabel.setIcon(null);
-                imageLabel.setText("[Image: " + imgPath + "]");
-            }
-        } else {
-            imageLabel.setIcon(null);
-            imageLabel.setText("");
-        }
+    if (logoIcon.getIconWidth() == -1) {
 
-        // Update page counter
-        pageIndicator.setText("Page " + (i + 1) + " / " + module.getTotalPages());
+        System.out.println("SDG logo not found!");
+
+    } else {
+
+        Image logoImage = logoIcon.getImage().getScaledInstance(
+                55,
+                55,
+                Image.SCALE_SMOOTH
+        );
+
+        JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
+        logoLabel.setBounds(15, 15, 55, 55);
+
+        headerPanel.add(logoLabel);
     }
 
-    //Private helpers 
+    // Global Goals Title
+    titleLabel = new JLabel("THE GLOBAL GOALS");
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    titleLabel.setForeground(Color.BLACK);
+    titleLabel.setBounds(80, 20, 250, 40);
+    headerPanel.add(titleLabel);
 
-    private void styleNavButton(JButton btn) {
-        btn.setFont(new Font("Arial", Font.BOLD, 13));
-        btn.setBackground(WHITE);
-        btn.setForeground(SDG_RED);
-        btn.setFocusPainted(false);
-        btn.setBorder(new RoundedBorder(20, WHITE));
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(110, 40));
+    // Divider Line
+    JSeparator separator = new JSeparator();
+    separator.setBounds(0, 89, 390, 1);
+    headerPanel.add(separator);
+
+    // Main Panel
+    JPanel mainPanel = new JPanel();
+    mainPanel.setBackground(new Color(197, 25, 45));
+    mainPanel.setBounds(0, 90, 390, 754);
+    mainPanel.setLayout(null);
+    add(mainPanel);
+
+    // Page Label
+    pageLabel = new JLabel("Page 1");
+    pageLabel.setForeground(Color.WHITE);
+    pageLabel.setFont(new Font("Arial", Font.BOLD, 22));
+    pageLabel.setBounds(30, 30, 300, 40);
+    mainPanel.add(pageLabel);
+
+    // Image Display Area
+    imageLabel = new JLabel("Image Here", SwingConstants.CENTER);
+    imageLabel.setOpaque(true);
+    imageLabel.setBackground(Color.WHITE);
+    imageLabel.setBounds(45, 90, 300, 180);
+    mainPanel.add(imageLabel);
+
+    // Content Area
+    contentArea = new JTextArea();
+    contentArea.setLineWrap(true);
+    contentArea.setWrapStyleWord(true);
+    contentArea.setEditable(false);
+    contentArea.setFont(new Font("Arial", Font.PLAIN, 16));
+    contentArea.setForeground(Color.WHITE);
+    contentArea.setBackground(new Color(197, 25, 45));
+    contentArea.setBounds(35, 300, 320, 280);
+    mainPanel.add(contentArea);
+
+    // Previous Button
+    prevButton = new JButton("Previous");
+    prevButton.setBounds(35, 630, 130, 45);
+    mainPanel.add(prevButton);
+
+    // Next Button
+    nextButton = new JButton("Next");
+    nextButton.setBounds(220, 630, 130, 45);
+    mainPanel.add(nextButton);
+
+    // Button Actions
+    prevButton.addActionListener(e -> previousPage());
+    nextButton.addActionListener(e -> nextPage());
+}
+
+    
+    private void displayPage(int index) {
+
+    pageLabel.setText("Page " + (index + 1) + " / " + module.getTotalPages());
+
+    module.showPage(index);
+
+    contentArea.setText(module.getPageContent(index));
+
+    String imagePath = module.getImagePath();
+
+    ImageIcon icon = new ImageIcon(imagePath);
+
+    if (icon.getIconWidth() == -1) {
+        imageLabel.setIcon(null);
+        imageLabel.setText("Image not found");
+    } else {
+        Image image = icon.getImage().getScaledInstance(
+                300,
+                180,
+                Image.SCALE_SMOOTH
+        );
+
+        imageLabel.setIcon(new ImageIcon(image));
+        imageLabel.setText("");
     }
+}
+    private String getPageContent(int index) {
 
-    private JLabel buildSdgWheelLabel(int size) {
-        return new JLabel() {
-            { setPreferredSize(new Dimension(size, size)); }
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color[] seg = {
-                    new Color(229,36,59),  new Color(221,166,58), new Color(76,159,56),
-                    new Color(197,25,45),  new Color(255,58,33),  new Color(38,189,226),
-                    new Color(252,195,11), new Color(162,25,66),  new Color(253,105,37),
-                    new Color(221,19,103), new Color(253,157,36), new Color(191,139,46),
-                    new Color(63,126,68),  new Color(10,151,169), new Color(86,192,43),
-                    new Color(0,104,157),  new Color(25,72,106)
-                };
-                int arc = 360 / seg.length;
-                for (int i = 0; i < seg.length; i++) {
-                    g2.setColor(seg[i]);
-                    g2.fillArc(0, 0, size, size, i * arc, arc);
-                }
-                int inner = size / 3;
-                g2.setColor(WHITE);
-                g2.fillOval((size - inner) / 2, (size - inner) / 2, inner, inner);
-                g2.dispose();
-            }
+        String[] contents = {
+            "Make sure all girls and boys can get free, fair and good-quality primary and secondary education that helps them learn useful knowledge and skills.",
+            "Make sure all girls and boys can access quality early childhood care and preschool education so they are ready for primary school.",
+            "Ensure all women and men have equal access to affordable, quality vocational, technical and university education.",
+            "Increase the number of young people and adults with useful technical and vocational skills for jobs and starting businesses.",
+            "Remove gender inequality in education and ensure vulnerable groups have equal access to education and vocational training.",
+            "Ensure all young people and many adults, both men and women can read, write, and do basic math.",
+            "Help everyone learn how to live sustainably, respect others and contribute to a peaceful and inclusive society.",
+            "Build and improve schools that are safe, inclusive and accessible for children, people with disabilities and all genders.",
+            "Provide more scholarships to help students from developing countries access higher education and specialized training.",
+            "Increase the number of qualified teachers through better training and international cooperation especially in developing countries."
         };
+
+        return contents[index];
     }
 
-    private JLabel buildSdg4IconLabel() {
-        return new JLabel() {
-            { setPreferredSize(new Dimension(52, 52)); }
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(197, 25, 45));
-                g2.fillRoundRect(0, 0, 50, 50, 10, 10);
-                g2.setColor(WHITE);
-                g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(2, 2, 46, 46, 10, 10);
-                g2.setFont(new Font("Arial", Font.BOLD, 13));
-                g2.drawString("4", 5, 16);
-                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                g2.drawLine(10, 36, 10, 20);
-                g2.drawLine(40, 36, 40, 20);
-                g2.drawLine(10, 20, 25, 28);
-                g2.drawLine(40, 20, 25, 28);
-                g2.drawLine(25, 20, 25, 36);
-                g2.dispose();
-            }
-        };
-    }
+    private void nextPage() {
 
-    // Inner class: RoundedPanel
-    static class RoundedPanel extends JPanel {
-        private final int   radius;
-        private final Color bg;
-
-        RoundedPanel(int radius, Color bg) {
-            this.radius = radius;
-            this.bg     = bg;
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(bg);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-            g2.dispose();
-            super.paintComponent(g);
+        if (currentPage < module.getTotalPages() - 1) {
+            currentPage++;
+            displayPage(currentPage);
         }
     }
 
-    // Inner class: RoundedBorder
-    static class RoundedBorder extends AbstractBorder {
-        private final int   radius;
-        private final Color color;
+    private void previousPage() {
 
-        RoundedBorder(int radius, Color color) {
-            this.radius = radius;
-            this.color  = color;
+        if (currentPage > 0) {
+            currentPage--;
+            displayPage(currentPage);
         }
+    }
 
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(color);
-            g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRoundRect(x, y, w - 1, h - 1, radius, radius);
-            g2.dispose();
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(6, 12, 6, 12);
-        }
+    public static void main(String[] args) {
+        new LearningScreen();
     }
 }
