@@ -261,7 +261,30 @@ public class MainApp {
         }
     }
 
-     public static void launchLeaderboard(User user) {
-        // Member 4 
-    }
+
+public static void launchLeaderboard(String username, int score) {
+     
+     // Member 4
+     // Made by Nur Syukrinah binti Suhaidi (97717)
+
+     // Create leaderboard system
+     Leaderboard leaderboard = new Leaderboard();
+
+     // Add user score into leaderboard
+     leaderboard.addScore(username, score);
+
+     // Create badge manager
+     BadgeManager badgeManager = new BadgeManager();
+
+     // Display information
+     System.out.println("User: " + username);
+     System.out.println("Score: " + score);
+     System.out.println("Badge: " + badgeManager.getBadge(score));
+
+     // Open leaderboard GUI
+     new LeaderboardScreenGUI(leaderboard);
 }
+}
+    
+
+
